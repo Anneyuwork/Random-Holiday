@@ -1,0 +1,52 @@
+{
+    "type": "APL",
+    "version": "1.1",
+    "settings": {},
+    "theme": "dark",
+    "import": [],
+    "resources": [],
+    "styles": {
+        "bigText": {
+            "values": [
+                {
+                    "fontSize": "30dp"
+                }
+            ]
+        }
+    },
+    "onMount": [],
+    "graphics": {},
+    "commands": {},
+    "layouts": {},
+    "mainTemplate": {
+        "parameters": [
+            "payload"
+        ],
+        "items": [
+            {
+                "type": "Container",
+                "paddingLeft": "7.5vw",
+                "paddingRight": "7.5vw",
+                "height": "100%",
+                "width": "100%",
+                "items": [
+                    {
+                        "type": "Text",
+                        "text": "${payload.text.start}",
+                        "style": "bigText",
+                        "paddingTop": "12dp",
+                        "paddingBottom": "12dp"
+                    },
+                    {
+                        "type": "Image",
+                        "align": "center",
+                        "paddingTop": "30dp",
+                        "height": "85vh",
+                        "width": "85vw",
+                        "source": "${payload.images.cityPic}"
+                    }
+                ]
+            }
+        ]
+    }
+}
