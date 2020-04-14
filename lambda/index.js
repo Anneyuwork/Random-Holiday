@@ -14,9 +14,12 @@
 // sets up dependencies
 const Alexa = require('ask-sdk-core');
 const i18n = require('i18next');
+//different languages
 const languageStrings = require('./languageStrings');
 const launchDocument = require('./documents/launchDocument.json');
 const util = require('./util');
+//get dataSource, import data.js geting all the location data here
+const data = require ('./data');
 
 // core functionality for fact skill
 const GetNewFactHandler = {
@@ -33,49 +36,44 @@ const GetNewFactHandler = {
     // gets a random fact by assigning an array to the variable
     // the random item from the array will be selected by the i18next library
     // the i18next library is set up in the Request Interceptor
-    const randomFact = requestAttributes.t('FACTS');
+    // const randomFact = requestAttributes.t('FACTS');
+    
+    //location is array of object, get from data.js
+    //randomLocation is one object, random pick from the location array
+    let randomLocation = {};
+    const location = data.location;
+      // If an array is used then a random value is selected
+      if (Array.isArray(location)) {
+        randomLocation = location[Math.floor(Math.random() * location.length)];
+      }
+    
     // concatenates a standard message with the random fact
-    const speakOutput = requestAttributes.t('GET_FACT_MESSAGE') + randomFact;
+    // requestAttributes.t is geeting the title translation from languageStrings.js, part of i18next library
+
+    const speakOutput = requestAttributes.t('GET_FACT_MESSAGE') + randomLocation.text;
     
     if (Alexa.getSupportedInterfaces(handlerInput.requestEnvelope)['Alexa.Presentation.APL']) {
             // Create Render Directive
-            if (randomFact === "Beijing, China"){
-                handlerInput.responseBuilder.addDirective({
-                    type: 'Alexa.Presentation.APL.RenderDocument',
-                    document: launchDocument,
-                    datasources: {
-                        text: {
-                            "start": "Holiday Destination: Beijing, China"
-                        },
-                        images: {
-                            "cityPic":"https://elasticbeanstalk-us-east-1-754237753286.s3.amazonaws.com/intricate-chinese-architectural-design-of-a-colorful-temple-2846001.jpg",
-                            "backgroundURL": "https://github.com/alexa/skill-sample-nodejs-first-apl-skill/blob/master/modules/assets/lights_1920x1080.png?raw=true"
-                        }
+            handlerInput.responseBuilder.addDirective({
+                type: 'Alexa.Presentation.APL.RenderDocument',
+                document: launchDocument,
+                datasources: {
+                    text: {
+                        "start": "Holiday Destination: " +  randomLocation.text
+                    },
+                    images: {
+                        "cityPic":randomLocation.image,
+                        "backgroundURL": "https://github.com/alexa/skill-sample-nodejs-first-apl-skill/blob/master/modules/assets/lights_1920x1080.png?raw=true"
                     }
-                });
-            } else {
-                handlerInput.responseBuilder.addDirective({
-                    type: 'Alexa.Presentation.APL.RenderDocument',
-                    document: launchDocument,
-                    datasources: {
-                        text: {
-                            "start": "Holiday Destination: Vancouver, Canada"
-                        },
-                        images: {
-                            "cityPic":"https://elasticbeanstalk-us-east-1-754237753286.s3.amazonaws.com/photo-of-city-during-dawn-2782485.jpg",
-                            "backgroundURL": "https://github.com/alexa/skill-sample-nodejs-first-apl-skill/blob/master/modules/assets/lights_1920x1080.png?raw=true"
-                        }
-                    }
-                });
-            }
-            
-    }
+                }
+            });
+    }        
     return handlerInput.responseBuilder
       .speak(speakOutput)
       // Uncomment the next line if you want to keep the session open so you can
       // ask for another fact without first re-opening the skill
       // .reprompt(requestAttributes.t('HELP_REPROMPT'))
-      .withSimpleCard(requestAttributes.t('SKILL_NAME'), randomFact)
+      //.withSimpleCard(requestAttributes.t('SKILL_NAME'), randomFact)
       .getResponse();
   },
 };

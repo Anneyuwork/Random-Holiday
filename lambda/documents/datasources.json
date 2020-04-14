@@ -1,0 +1,33 @@
+{
+    "aplDocData": {
+        "type": "object",
+        "properties": {
+            "description": "Use this datasource to render different city's picture",
+            "headerTitle": "Welcome to Random Holiday",
+            "hintText": "Where is my random holiday destination?",
+            "items": [
+                {
+                    "text": "Beijing, China",
+                    "id": "beijingChina",
+                    "image": "https://elasticbeanstalk-us-east-1-754237753286.s3.amazonaws.com/intricate-chinese-architectural-design-of-a-colorful-temple-2846001.jpg"
+                },
+                {
+                    "text": "Vancouver, Canada",
+                    "id": "vancouverCanada",
+                    "image": "https://elasticbeanstalk-us-east-1-754237753286.s3.amazonaws.com/photo-of-city-during-dawn-2782485.jpg"
+                },
+                {
+                    "text": "San Francisco, United States",
+                    "id": "sanFranciscoUnitedStates",
+                    "image": "https://ask-skills-assets.s3.amazonaws.com/apl-layout-assets/arl-examples/background.png"
+                }
+            ]
+        },
+        "transformers": [
+            {
+                "inputPath": "hintText",
+                "transformer": "textToHint"
+            }
+        ]
+    }
+}
