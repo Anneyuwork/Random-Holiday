@@ -1,15 +1,3 @@
-/*
- * Copyright 2018-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * A copy of the License is located at
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * or in the "license" file accompanying this file. This file is distributed
- * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- */
 
 // sets up dependencies
 const Alexa = require('ask-sdk-core');
@@ -19,19 +7,93 @@ const languageStrings = require('./languageStrings');
 const launchDocument = require('./documents/launchDocument.json');
 const util = require('./util');
 //get dataSource, import data.js geting all the location data here
-const data = require ('./data');
+//const data = require ('./data');
+
+const LaunchRequestHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
+    },
+    handle(handlerInput) {
+        const data = getLocalizedData(handlerInput.requestEnvelope.request.locale);
+        //debug--Logs : Amazon CloudWatch
+        console.log(data);
+        //const speakOutput = 'Welcome, to Riddle Me Today. I will give youa Riddle everyday and 3 chances to answer it correctly. The Less chances you take, the more points you win.';
+        //best practice due, when client didn't response, we can have reprompt to ask again
+        //const prompt = 'Are you ready for today\'s riddle?';
+        let speakOutput = " ";
+        const prompt = data["QUESTION"];
+        speakOutput = data["WELCOME_MESSAGE"] + data["QUESTION"];
+        
+        
+        if (Alexa.getSupportedInterfaces(handlerInput.requestEnvelope)['Alexa.Presentation.APL']) {
+                // Create Render Directive
+                handlerInput.responseBuilder.addDirective({
+                    type: 'Alexa.Presentation.APL.RenderDocument',
+                    document: launchDocument,
+                    datasources: {
+                        text: {
+                            "start": "Welcome to Random Holiday " 
+                        },
+                        images: {
+                            "cityPic":"https://elasticbeanstalk-us-east-1-754237753286.s3.amazonaws.com/welcome+page.jpg",
+                            "backgroundURL": "https://d2o906d8ln7ui1.cloudfront.net/images/BT7_Background.png",
+                            "logoUrl": "https://d2o906d8ln7ui1.cloudfront.net/images/cheeseskillicon.png"
+                        }
+                    }
+                });
+        }  
+        /*
+        let persistentAttributes = await handlerInput.attributesManager.getPersistentAttributes();
+        console.log(persistentAttributes.FIRST_TIME);
+        
+        if (persistentAttributes.FIRST_TIME === undefined){
+            //first time user
+            const dataToSave = {
+                "FIRST_TIME":false
+            }
+            speakOutput = data["WELCOME_MESSAGE"] + data["QUESTION"];
+            const attributesManager = handlerInput.attributesManager;
+            //set attributes
+            attributesManager.setPersistentAttributes(dataToSave);
+            //finally save the attributes
+            await attributesManager.savePersistentAttributes();
+        } else {
+            //not first time user
+            speakOutput = data["REYURNING_USERS_WELCOME"] + data["QUESTION"];
+        }
+        */
+        return handlerInput.responseBuilder
+            .speak(speakOutput)
+            .reprompt(prompt)
+            .getResponse();
+    }
+};
+
+//globalization 
+function getLocalizedData(locale){
+    return languageStrings[locale];
+}
+
 
 // core functionality for fact skill
-const GetNewFactHandler = {
+const RandomDestIntentHandler = {
   canHandle(handlerInput) {
-    const request = handlerInput.requestEnvelope.request;
-    // checks request type
-    return request.type === 'LaunchRequest'
-      || (request.type === 'IntentRequest'
-        && request.intent.name === 'GetNewFactIntent');
-  },
+        //we add an AMAZON.YesIntent , attention to the caps!
+        return (Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'RandomDestIntent') 
+            ||(Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.YesIntent');
+    },
+    /*
+      canHandle(handlerInput) {
+        const request = handlerInput.requestEnvelope.request;
+        // checks request type
+        return request.type === 'LaunchRequest'
+          || (request.type === 'IntentRequest'
+            && request.intent.name === 'RandomDestIntent');
+      },
+  */
   handle(handlerInput) {
-   
     const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
     // gets a random fact by assigning an array to the variable
     // the random item from the array will be selected by the i18next library
@@ -40,8 +102,11 @@ const GetNewFactHandler = {
     
     //location is array of object, get from data.js
     //randomLocation is one object, random pick from the location array
-    let randomLocation = {};
-    const location = data.location;
+    let randomLocation;
+    const data = getLocalizedData(handlerInput.requestEnvelope.request.locale);
+    const location = data["LOCATION"];
+    console.log(location);
+    
       // If an array is used then a random value is selected
       if (Array.isArray(location)) {
         randomLocation = location[Math.floor(Math.random() * location.length)];
@@ -50,7 +115,7 @@ const GetNewFactHandler = {
     // concatenates a standard message with the random fact
     // requestAttributes.t is geeting the title translation from languageStrings.js, part of i18next library
 
-    const speakOutput = requestAttributes.t('GET_FACT_MESSAGE') + randomLocation.text;
+    const speakOutput = data["MESSAGE"] + randomLocation.text;
     
     if (Alexa.getSupportedInterfaces(handlerInput.requestEnvelope)['Alexa.Presentation.APL']) {
             // Create Render Directive
@@ -63,11 +128,12 @@ const GetNewFactHandler = {
                     },
                     images: {
                         "cityPic":randomLocation.image,
-                        "backgroundURL": "https://github.com/alexa/skill-sample-nodejs-first-apl-skill/blob/master/modules/assets/lights_1920x1080.png?raw=true"
+                        "backgroundURL": "https://d2o906d8ln7ui1.cloudfront.net/images/BT7_Background.png",
+                        "logoUrl": "https://d2o906d8ln7ui1.cloudfront.net/images/cheeseskillicon.png"
                     }
                 }
             });
-    }        
+    }              
     return handlerInput.responseBuilder
       .speak(speakOutput)
       // Uncomment the next line if you want to keep the session open so you can
@@ -185,7 +251,8 @@ const skillBuilder = Alexa.SkillBuilders.custom();
 
 exports.handler = skillBuilder
   .addRequestHandlers(
-    GetNewFactHandler,
+    LaunchRequestHandler,
+    RandomDestIntentHandler,
     HelpHandler,
     ExitHandler,
     FallbackHandler,

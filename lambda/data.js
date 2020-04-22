@@ -1,3 +1,4 @@
+//should delete, not use anymore
 //this is special data information for used in index.js
 //all image url is from s3 under AWS
 

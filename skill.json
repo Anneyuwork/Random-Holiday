@@ -7,59 +7,58 @@
         },
         "interfaces": [
           {
-            "type": "ALEXA_PRESENTATION_APL",
             "supportedViewports": [
               {
-                "mode": "HUB",
-                "shape": "ROUND",
-                "minWidth": 480,
+                "maxHeight": 480,
                 "maxWidth": 480,
                 "minHeight": 480,
-                "maxHeight": 480
+                "minWidth": 480,
+                "mode": "HUB",
+                "shape": "ROUND"
               },
               {
-                "mode": "HUB",
-                "shape": "RECTANGLE",
-                "minWidth": 1024,
+                "maxHeight": 600,
                 "maxWidth": 1024,
                 "minHeight": 600,
-                "maxHeight": 600
+                "minWidth": 1024,
+                "mode": "HUB",
+                "shape": "RECTANGLE"
               },
               {
-                "mode": "HUB",
-                "shape": "RECTANGLE",
-                "minWidth": 1280,
+                "maxHeight": 800,
                 "maxWidth": 1280,
                 "minHeight": 800,
-                "maxHeight": 800
+                "minWidth": 1280,
+                "mode": "HUB",
+                "shape": "RECTANGLE"
               },
               {
-                "mode": "TV",
-                "shape": "RECTANGLE",
-                "minWidth": 960,
+                "maxHeight": 540,
                 "maxWidth": 960,
                 "minHeight": 540,
-                "maxHeight": 540
+                "minWidth": 960,
+                "mode": "TV",
+                "shape": "RECTANGLE"
               },
               {
-                "mode": "HUB",
-                "shape": "RECTANGLE",
-                "minWidth": 960,
+                "maxHeight": 480,
                 "maxWidth": 960,
                 "minHeight": 480,
-                "maxHeight": 480
+                "minWidth": 960,
+                "mode": "HUB",
+                "shape": "RECTANGLE"
               }
-            ]
+            ],
+            "type": "ALEXA_PRESENTATION_APL"
           }
         ]
       }
     },
     "manifestVersion": "1.0",
     "publishingInformation": {
+      "category": "KNOWLEDGE_AND_TRIVIA",
       "locales": {
         "en-US": {
-          "name": "Random Holiday",
-          "summary": "Learn fun facts about space.",
           "description": "Ask for Space Facts, and learn about what really matters, like dark matter.\n\nSpace Facts provides fun the whole family can enjoy and is guaranteed to make you smarter.\n\nTo start, just say \"Alexa, launch Space Facts\" or \"Alexa, open Space Facts\" to get a fact\".\n\nAt anytime, you can stop by saying \"Alexa, stop\"",
           "examplePhrases": [
             "Alexa open space facts",
@@ -70,10 +69,11 @@
             "space",
             "facts",
             "trivia"
-          ]
+          ],
+          "name": "Random Holiday",
+          "summary": "Learn fun facts about space."
         }
-      },
-      "category": "KNOWLEDGE_AND_TRIVIA"
+      }
     }
   }
 }

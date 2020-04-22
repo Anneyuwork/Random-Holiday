@@ -20,7 +20,7 @@
           "samples": []
         },
         {
-          "name": "GetNewFactIntent",
+          "name": "RandomDestIntent",
           "slots": [],
           "samples": [
             "a random holiday destination",
@@ -39,6 +39,10 @@
         {
           "name": "AMAZON.NavigateHomeIntent",
           "samples": []
+        },
+        {
+          "name": "AMAZON.YesIntent",
+          "samples": []
         }
       ],
       "types": [],
@@ -49,5 +53,5 @@
       }
     }
   },
-  "version": "4"
+  "version": "6"
 }
