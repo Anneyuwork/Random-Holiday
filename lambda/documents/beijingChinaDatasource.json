@@ -1,9 +1,0 @@
-{
-    "text": {
-        "start": "Holiday Destination: Beijing, China"
-    },
-    "images": {
-        "cityPic":"https://elasticbeanstalk-us-east-1-754237753286.s3.amazonaws.com/intricate-chinese-architectural-design-of-a-colorful-temple-2846001.jpg",
-        "backgroundURL": "https://github.com/alexa/skill-sample-nodejs-first-apl-skill/blob/master/modules/assets/lights_1920x1080.png?raw=true"
-    }
-}

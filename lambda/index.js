@@ -2,13 +2,15 @@
 // sets up dependencies
 const Alexa = require('ask-sdk-core');
 const i18n = require('i18next');
-//different languages
+//getting data from languageStrings
 const languageStrings = require('./languageStrings');
+//launchpage json
 const launchDocument = require('./documents/launchDocument.json');
+//randomholiday json with button
+const randomDocument = require('./documents/randomDocument.json');
 const util = require('./util');
-//get dataSource, import data.js geting all the location data here
-//const data = require ('./data');
 
+//launch page--home(welcome) page
 const LaunchRequestHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
@@ -17,9 +19,6 @@ const LaunchRequestHandler = {
         const data = getLocalizedData(handlerInput.requestEnvelope.request.locale);
         //debug--Logs : Amazon CloudWatch
         console.log(data);
-        //const speakOutput = 'Welcome, to Riddle Me Today. I will give youa Riddle everyday and 3 chances to answer it correctly. The Less chances you take, the more points you win.';
-        //best practice due, when client didn't response, we can have reprompt to ask again
-        //const prompt = 'Are you ready for today\'s riddle?';
         let speakOutput = " ";
         const prompt = data["QUESTION"];
         speakOutput = data["WELCOME_MESSAGE"] + data["QUESTION"];
@@ -42,26 +41,6 @@ const LaunchRequestHandler = {
                     }
                 });
         }  
-        /*
-        let persistentAttributes = await handlerInput.attributesManager.getPersistentAttributes();
-        console.log(persistentAttributes.FIRST_TIME);
-        
-        if (persistentAttributes.FIRST_TIME === undefined){
-            //first time user
-            const dataToSave = {
-                "FIRST_TIME":false
-            }
-            speakOutput = data["WELCOME_MESSAGE"] + data["QUESTION"];
-            const attributesManager = handlerInput.attributesManager;
-            //set attributes
-            attributesManager.setPersistentAttributes(dataToSave);
-            //finally save the attributes
-            await attributesManager.savePersistentAttributes();
-        } else {
-            //not first time user
-            speakOutput = data["REYURNING_USERS_WELCOME"] + data["QUESTION"];
-        }
-        */
         return handlerInput.responseBuilder
             .speak(speakOutput)
             .reprompt(prompt)
@@ -75,30 +54,18 @@ function getLocalizedData(locale){
 }
 
 
-// core functionality for fact skill
+// core functionality for giving back random city information 
 const RandomDestIntentHandler = {
   canHandle(handlerInput) {
-        //we add an AMAZON.YesIntent , attention to the caps!
+        //add an AMAZON.YesIntent , attention to the caps!
         return (Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'RandomDestIntent') 
             ||(Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.YesIntent');
     },
-    /*
-      canHandle(handlerInput) {
-        const request = handlerInput.requestEnvelope.request;
-        // checks request type
-        return request.type === 'LaunchRequest'
-          || (request.type === 'IntentRequest'
-            && request.intent.name === 'RandomDestIntent');
-      },
-  */
+   
   handle(handlerInput) {
     const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
-    // gets a random fact by assigning an array to the variable
-    // the random item from the array will be selected by the i18next library
-    // the i18next library is set up in the Request Interceptor
-    // const randomFact = requestAttributes.t('FACTS');
     
     //location is array of object, get from data.js
     //randomLocation is one object, random pick from the location array
@@ -111,9 +78,6 @@ const RandomDestIntentHandler = {
       if (Array.isArray(location)) {
         randomLocation = location[Math.floor(Math.random() * location.length)];
       }
-    
-    // concatenates a standard message with the random fact
-    // requestAttributes.t is geeting the title translation from languageStrings.js, part of i18next library
 
     const speakOutput = data["MESSAGE"] + randomLocation.text;
     
@@ -121,7 +85,7 @@ const RandomDestIntentHandler = {
             // Create Render Directive
             handlerInput.responseBuilder.addDirective({
                 type: 'Alexa.Presentation.APL.RenderDocument',
-                document: launchDocument,
+                document: randomDocument,
                 datasources: {
                     text: {
                         "start": "Holiday Destination: " +  randomLocation.text
@@ -143,6 +107,44 @@ const RandomDestIntentHandler = {
       .getResponse();
   },
 };
+
+//handle the button Click event go back to launch page
+const ReturnButtonEventHandler = {
+    canHandle(handlerInput){
+        // Since an APL skill might have multiple buttons that generate UserEvents,
+        // use the event source ID to determine the button press that triggered
+        // this event and use the correct handler. In this example, the string 
+        // 'returnButton' is the ID we set on the AlexaButton in the document.
+        
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'Alexa.Presentation.APL.UserEvent'
+            && handlerInput.requestEnvelope.request.source.id === 'returnButton';
+    },
+    handle(handlerInput){
+        const speakOutput = "Thank you for clicking the button! Do you want to ask me for a random holiday destination?";
+        if (Alexa.getSupportedInterfaces(handlerInput.requestEnvelope)['Alexa.Presentation.APL']) {
+                // Create Render Directive
+                handlerInput.responseBuilder.addDirective({
+                    type: 'Alexa.Presentation.APL.RenderDocument',
+                    document: launchDocument,
+                    datasources: {
+                        text: {
+                            "start": "Welcome to Random Holiday " 
+                        },
+                        images: {
+                            "cityPic":"https://elasticbeanstalk-us-east-1-754237753286.s3.amazonaws.com/welcome+page.jpg",
+                            "backgroundURL": "https://d2o906d8ln7ui1.cloudfront.net/images/BT7_Background.png",
+                            "logoUrl": "https://d2o906d8ln7ui1.cloudfront.net/images/cheeseskillicon.png"
+                        }
+                    }
+                });
+        }  
+        return handlerInput.responseBuilder
+            .speak(speakOutput)
+            //.reprompt(prompt)
+            .getResponse();
+    }
+}
+
 
 const HelpHandler = {
   canHandle(handlerInput) {
@@ -217,6 +219,7 @@ const ErrorHandler = {
   },
 };
 
+//didn't use here 
 const LocalizationInterceptor = {
   process(handlerInput) {
     // Gets the locale from the request and initializes i18next.
@@ -253,6 +256,7 @@ exports.handler = skillBuilder
   .addRequestHandlers(
     LaunchRequestHandler,
     RandomDestIntentHandler,
+    ReturnButtonEventHandler,
     HelpHandler,
     ExitHandler,
     FallbackHandler,

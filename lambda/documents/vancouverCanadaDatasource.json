@@ -1,9 +1,0 @@
-{
-    "text": {
-        "start": "Holiday Destination: Vancouver, Canada"
-    },
-    "images": {
-        "cityPic":"https://elasticbeanstalk-us-east-1-754237753286.s3.amazonaws.com/photo-of-city-during-dawn-2782485.jpg",
-        "backgroundURL": "https://github.com/alexa/skill-sample-nodejs-first-apl-skill/blob/master/modules/assets/lights_1920x1080.png?raw=true"
-    }
-}

@@ -17,20 +17,6 @@ module.exports = {
         "FALLBACK_REPROMPT": 'What can I help you with?',
         "ERROR_MESSAGE": 'Sorry, an error occurred.',
         "STOP_MESSAGE": 'Goodbye!',
-        "TEXT":[
-            "Beijing, China",
-            "Vancouver, Canada",
-            "San Francisco, United States",
-            "Tokyo, Japan",
-            "Paris France"
-            ],
-        "IMAGE":[
-            "https://elasticbeanstalk-us-east-1-754237753286.s3.amazonaws.com/intricate-chinese-architectural-design-of-a-colorful-temple-2846001.jpg",
-            "https://elasticbeanstalk-us-east-1-754237753286.s3.amazonaws.com/photo-of-city-during-dawn-2782485.jpg",
-            "https://elasticbeanstalk-us-east-1-754237753286.s3.amazonaws.com/america-architecture-bay-boat-208745.jpg",
-            "https://elasticbeanstalk-us-east-1-754237753286.s3.amazonaws.com/low-angle-shot-of-the-tokyo-skytree-2187430.jpg",
-            "https://elasticbeanstalk-us-east-1-754237753286.s3.amazonaws.com/picture-of-eiffel-tower-338515.jpg"
-            ],
         "LOCATION":[
             {
                 "text": "Beijing, China",
