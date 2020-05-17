@@ -10,6 +10,7 @@ const launchDocument = require('./documents/launchDocument.json');
 const randomDocument = require('./documents/randomDocument.json');
 const util = require('./util');
 
+
 //launch page--home(welcome) page
 const LaunchRequestHandler = {
     canHandle(handlerInput) {
@@ -18,7 +19,7 @@ const LaunchRequestHandler = {
     handle(handlerInput) {
         const data = getLocalizedData(handlerInput.requestEnvelope.request.locale);
         //debug--Logs : Amazon CloudWatch
-        console.log(data);
+        //console.log(data);
         let speakOutput = " ";
         const prompt = data["QUESTION"];
         speakOutput = data["WELCOME_MESSAGE"] + data["QUESTION"];
@@ -53,8 +54,59 @@ function getLocalizedData(locale){
     return languageStrings[locale];
 }
 
+//fecth API-HTTP calls, input: lat and lon, output: weather information
+var http = require('http');
+function weather(latitude, longitude){
+    return new Promise((resolve, reject)=>{
+        const url = 'http://api.weatherstack.com/current?access_key=&query=' + latitude + ',' + longitude
+    
+        const request = http.request(url, (response)=>{
+            let data = ''
+        
+            response.on ('data', (chunk) =>{
+                data = data + chunk.toString()
+            })
+        
+            response.on ('end', () =>{
+                resolve(JSON.parse(data));
+            })
+        })
+        
+        request.on('error',(error)=>{
+            reject(error);
+        })
+        
+        request.end()
+    });
+}
 
-// core functionality for giving back random city information 
+// fecth API-HTTP calls, input: city name, output: lat and lon
+var https = require('https');
+function geoLocation(address){
+    return new Promise((resolve, reject)=>{
+        const url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/' + address + '.json?access_token='
+    
+        const request = https.request(url, (response)=>{
+            let data = ''
+        
+            response.on ('data', (chunk) =>{
+                data = data + chunk.toString()
+            })
+        
+            response.on ('end', () =>{
+                resolve(JSON.parse(data));
+            })
+        })
+        
+        request.on('error',(error)=>{
+            reject(error);
+        })
+        
+        request.end()
+    });
+}
+
+// main functionality for giving back random city information 
 const RandomDestIntentHandler = {
   canHandle(handlerInput) {
         //add an AMAZON.YesIntent , attention to the caps!
@@ -64,7 +116,7 @@ const RandomDestIntentHandler = {
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.YesIntent');
     },
    
-  handle(handlerInput) {
+  async handle(handlerInput) {
     const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
     
     //location is array of object, get from data.js
@@ -72,14 +124,28 @@ const RandomDestIntentHandler = {
     let randomLocation;
     const data = getLocalizedData(handlerInput.requestEnvelope.request.locale);
     const location = data["LOCATION"];
-    console.log(location);
+    //console.log(location);
+    
     
       // If an array is used then a random value is selected
       if (Array.isArray(location)) {
         randomLocation = location[Math.floor(Math.random() * location.length)];
       }
-
+      
+    //geoLocationresponse get the randomLocation's lat and lon!
+    const geoLocationresponse = await geoLocation(randomLocation.text);
+   // console.log(geoLocationresponse);
+    const lat = geoLocationresponse.features[0].center[1];
+    const lon = geoLocationresponse.features[0].center[0];
+    //get weather information from weather http API request, using the lat/lon result from geoLocation
+    const response = await weather(lat, lon);
+    //response.current.weather_descriptions[0] = weatherInfor is the current weather information
+    //console.log(response.current.weather_descriptions[0]);
+    const weatherInfor = response.current.weather_descriptions[0];
+    console.log(weatherInfor);
+    
     const speakOutput = data["MESSAGE"] + randomLocation.text;
+
     
     if (Alexa.getSupportedInterfaces(handlerInput.requestEnvelope)['Alexa.Presentation.APL']) {
             // Create Render Directive
@@ -88,7 +154,7 @@ const RandomDestIntentHandler = {
                 document: randomDocument,
                 datasources: {
                     text: {
-                        "start": "Holiday Destination: " +  randomLocation.text
+                        "start": randomLocation.text + weatherInfor
                     },
                     images: {
                         "cityPic":randomLocation.image,

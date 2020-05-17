@@ -19,23 +19,23 @@ module.exports = {
         "STOP_MESSAGE": 'Goodbye!',
         "LOCATION":[
             {
-                "text": "Beijing, China",
+                "text": "Beijing",
                 "image": "https://elasticbeanstalk-us-east-1-754237753286.s3.amazonaws.com/intricate-chinese-architectural-design-of-a-colorful-temple-2846001.jpg"
             },
             {
-                "text": "Vancouver, Canada",
+                "text": "Vancouver",
                 "image": "https://elasticbeanstalk-us-east-1-754237753286.s3.amazonaws.com/photo-of-city-during-dawn-2782485.jpg"
             },
             {
-                "text": "San Francisco, United States",
+                "text": "San Francisco",
                 "image": "https://elasticbeanstalk-us-east-1-754237753286.s3.amazonaws.com/america-architecture-bay-boat-208745.jpg"
             },
             {
-                "text": "Tokyo, Japan",
+                "text": "Tokyo",
                 "image": "https://elasticbeanstalk-us-east-1-754237753286.s3.amazonaws.com/low-angle-shot-of-the-tokyo-skytree-2187430.jpg"
             },
             {
-                "text": "Paris France",
+                "text": "Paris",
                 "image": "https://elasticbeanstalk-us-east-1-754237753286.s3.amazonaws.com/picture-of-eiffel-tower-338515.jpg"
             }
         ]
